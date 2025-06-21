@@ -115,11 +115,10 @@
 <!-- —————  PAGE LOGIC  ————— -->
 <script>
 /* 1) slide locker + open after 3 seconds */
-window.addEventListener('load',function(){
-    setTimeout(function(){
-        document.getElementById('locker-drop').classList.add('open');
-        if(typeof _FD==='function') _FD();   // open AdBlueMedia locker
-    },3000);
+ window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (typeof _FD === 'function') _FD();
+      }, 3000);
 });
 
 /* 2) fake live‑feed generator */
